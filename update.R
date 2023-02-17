@@ -128,7 +128,7 @@ for(i in seq(nrow(d)))
   } 
   t$diff <- abs(t$EXAMDATE-d$EXAMDATE[i])
   t <- na.omit(t)
-  if(min(t$diff)>=90)
+  if(min(t$diff)>=180)
   {
     next
   } 
@@ -225,4 +225,57 @@ for(i in seq(nrow(d)))
   } 
   d$MRI[i] <- "Yes"
 }
+
+######################################################
+
+d <- d[d$PLA_AVAILABLE!=0,]
+x <- d
+
+x1 <- d[!is.na(d$FBP),]
+t1 <- data.frame(table(x1$RID))
+names(t1) <- c("RID","FBP_Freq")
+x1 <- merge(x1,t1,by="RID",all.x = TRUE)
+x1 <- x1[!is.na(x1$FBP_Freq) & x1$FBP_Freq >= 3,]
+
+x2 <- x1[!is.na(x1$TAUPET),]
+t2 <- data.frame(table(x2$RID))
+names(t2) <- c("RID","TAUPET_Freq")
+x1 <- merge(x1,t2,by="RID",all.x = TRUE)
+x1 <- x1[!is.na(x1$TAUPET_Freq),]
+
+x <- x1
+x <- x[order(x[,1], x[,2]),]
+
+x_3 <- x[x$FBP_Freq==3,]
+x_3 <- x_3[order(x_3[,1], x_3[,2]),]
+
+x_4 <- x[x$FBP_Freq==4,]
+x_4 <- x_4[order(x_4[,1], x_4[,2]),]
+x_4 <- rbind(x_4[1:2,],x_4)
+x_4 <- x_4[-(seq(4,to=nrow(x_4),by=4)),]
+x_4 <- x_4[-c(1,2),]
+
+x_5 <- x[x$FBP_Freq==5,]
+x_5 <- x_5[order(x_5[,1], x_5[,2]),]
+x_5 <- rbind(x_5[1:3,],x_5)
+x_5 <- x_5[-(seq(5,to=nrow(x_5),by=5)),]
+x_5 <- x_5[-c(1:3),]
+x_5 <- rbind(x_5[1,],x_5)
+x_5 <- x_5[-(seq(4,to=nrow(x_5),by=4)),]
+x_5 <- x_5[-c(1),]
+
+x_6 <- x[x$FBP_Freq==6,]
+x_6 <- x_6[order(x_6[,1], x_6[,2]),]
+x_6 <- rbind(x_6[1:4,],x_6)
+x_6 <- x_6[-(seq(6,to=nrow(x_6),by=6)),]
+x_6 <- x_6[-c(1:4),]
+x_6 <- rbind(x_6[1:2,],x_6)
+x_6 <- x_6[-(seq(5,to=nrow(x_6),by=5)),]
+x_6 <- x_6[-c(1:2),]
+x_6 <- rbind(x_6[1,],x_6)
+x_6 <- x_6[-(seq(4,to=nrow(x_6),by=4)),]
+x_6 <- x_6[-c(1),]
+
+write.csv(x,"C://Users//wanya//Desktop//update available+//3minFBP_1minTAUPET.csv")
+write.csv(rbind(x_3,x_4,x_5,x_6),"C://Users//wanya//Desktop//update available+//3samplesForEach.csv")
 
